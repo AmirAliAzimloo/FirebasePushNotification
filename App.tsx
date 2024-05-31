@@ -16,7 +16,7 @@ const NAVIGATION_IDS = ["home", "settings"];
 function buildDeepLinkFromNotificationData(data:any): string | null {
   const navigationId = data?.navigationId;
   if (!NAVIGATION_IDS.includes(navigationId)) {
-    console.warn('Unverified navigationId', navigationId)
+    // console.warn('Unverified navigationId', navigationId)
     return null;
   }
   if (navigationId === "home") {
