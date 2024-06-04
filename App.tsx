@@ -1,32 +1,32 @@
-import React, { useEffect } from 'react'
-import { ActivityIndicator, Linking, PermissionsAndroid, StyleSheet} from 'react-native'
-import messaging from '@react-native-firebase/messaging';
-import { createStackNavigator } from '@react-navigation/stack';
-import { NavigationContainer } from '@react-navigation/native';
+import React, { useEffect } from "react";
+import { ActivityIndicator, Linking, PermissionsAndroid, StyleSheet } from "react-native";
+import messaging from "@react-native-firebase/messaging";
+import { createStackNavigator } from "@react-navigation/stack";
+import { NavigationContainer } from "@react-navigation/native";
 
 
-import Home from './components/Home';
-import Setting from './components/Setting';
+import Home from "./components/Home";
+import Setting from "./components/Setting";
 
 
 //* constants
 const Stack = createStackNavigator();
-const NAVIGATION_IDS = ["home", "settings"];
+const NAVIGATION_IDS = ['home', 'settings'];
 
-function buildDeepLinkFromNotificationData(data:any): string | null {
+function buildDeepLinkFromNotificationData(data: any): string | null {
   const navigationId = data?.navigationId;
   if (!NAVIGATION_IDS.includes(navigationId)) {
     // console.warn('Unverified navigationId', navigationId)
     return null;
   }
   if (navigationId === "home") {
-    return 'myapp://home';
+    return "myapp://home";
   }
   if (navigationId === "settings") {
-    return 'myapp://settings';
+    return "myapp://settings";
   }
-  
-  return null
+
+  return null;
 }
 
 const linking = {
@@ -39,34 +39,34 @@ const linking = {
   },
   async getInitialURL() {
     const url = await Linking.getInitialURL();
-    if (typeof url === 'string') {
+    if (typeof url === "string") {
       return url;
     }
     //getInitialNotification: When the application is opened from a quit state.
     const message = await messaging().getInitialNotification();
     const deeplinkURL = buildDeepLinkFromNotificationData(message?.data);
-    if (typeof deeplinkURL === 'string') {
+    if (typeof deeplinkURL === "string") {
       return deeplinkURL;
     }
   },
   subscribe(listener: (url: string) => void) {
-    const onReceiveURL = ({url}: {url: string}) => listener(url);
+    const onReceiveURL = ({ url }: { url: string }) => listener(url);
 
     // Listen to incoming links from deep linking
-    const linkingSubscription = Linking.addEventListener('url', onReceiveURL);
+    const linkingSubscription = Linking.addEventListener("url", onReceiveURL);
     messaging().setBackgroundMessageHandler(async remoteMessage => {
-      console.log('Message handled in the background!', remoteMessage);
+      console.log("Message handled in the background!", remoteMessage);
     });
 
     const foreground = messaging().onMessage(async remoteMessage => {
-      console.log('A new FCM message arrived!', remoteMessage);
+      console.log("A new FCM message arrived!", remoteMessage);
 
     });
     //onNotificationOpenedApp: When the application is running, but in the background.
     const unsubscribe = messaging().onNotificationOpenedApp(remoteMessage => {
-      const url = buildDeepLinkFromNotificationData(remoteMessage.data)
-      if (typeof url === 'string') {
-        listener(url)
+      const url = buildDeepLinkFromNotificationData(remoteMessage.data);
+      if (typeof url === "string") {
+        listener(url);
       }
     });
 
@@ -75,41 +75,41 @@ const linking = {
       unsubscribe();
       foreground();
     };
-  },
-}
+  }
+};
 
 const App = () => {
 
 
   //* get notification permision
-  useEffect(()=>{
+  useEffect(() => {
     const requestUserPermission = async () => {
       PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
-     const authStatus = await messaging().requestPermission();
-     const enabled =
-       authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-       authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+      const authStatus = await messaging().requestPermission();
+      const enabled =
+        authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+        authStatus === messaging.AuthorizationStatus.PROVISIONAL;
 
-     if (enabled) {
-       console.log('Authorization status:', authStatus);
-       const token = await messaging().getToken();
-       console.log('FCM token:', token);
-     }
-   };
+      if (enabled) {
+        console.log("Authorization status:", authStatus);
+        const token = await messaging().getToken();
+        console.log('FCM token:', token);
+      }
+    };
 
-   requestUserPermission();
-   },[])
+    requestUserPermission();
+  }, []);
 
   return (
     <NavigationContainer linking={linking} fallback={<ActivityIndicator animating />}>
-    <Stack.Navigator initialRouteName='Home'>
-      <Stack.Screen name="Home" component={Home} />
-      <Stack.Screen name="Settings" component={Setting} />
-    </Stack.Navigator>
-  </NavigationContainer>
-  )
-}
+      <Stack.Navigator initialRouteName="Home">
+        <Stack.Screen name="Home" component={Home} />
+        <Stack.Screen name="Settings" component={Setting} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+};
 
-export default App
+export default App;
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({});
