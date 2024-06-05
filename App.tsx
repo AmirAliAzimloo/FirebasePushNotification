@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { ActivityIndicator, Linking, PermissionsAndroid, StyleSheet } from "react-native";
+import { ActivityIndicator, Alert, Linking, PermissionsAndroid, StyleSheet } from "react-native";
 import messaging from "@react-native-firebase/messaging";
 import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer } from "@react-navigation/native";
@@ -60,6 +60,7 @@ const linking = {
 
     const foreground = messaging().onMessage(async remoteMessage => {
       console.log("A new FCM message arrived!", remoteMessage);
+      Alert.alert(remoteMessage.notification?.title as string,remoteMessage.notification?.body)
 
     });
     //onNotificationOpenedApp: When the application is running, but in the background.
