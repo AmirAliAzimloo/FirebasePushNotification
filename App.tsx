@@ -61,7 +61,6 @@ const linking = {
     const foreground = messaging().onMessage(async remoteMessage => {
       console.log("A new FCM message arrived!", remoteMessage);
       Alert.alert(remoteMessage.notification?.title as string,remoteMessage.notification?.body)
-
     });
     //onNotificationOpenedApp: When the application is running, but in the background.
     const unsubscribe = messaging().onNotificationOpenedApp(remoteMessage => {
