@@ -7,6 +7,7 @@ import { NavigationContainer } from "@react-navigation/native";
 
 import Home from "./components/Home";
 import Setting from "./components/Setting";
+import LottieSplashScreen from "react-native-lottie-splash-screen";
 
 
 //* constants
@@ -98,7 +99,15 @@ const App = () => {
       }
     };
 
+    const timer = setTimeout(()=>{
+      LottieSplashScreen.hide();
+    },4000);
+
     requestUserPermission();
+
+    return ()=>{
+      clearTimeout(timer);
+    }
   }, []);
 
   return (
