@@ -58,6 +58,7 @@ const linking = {
       console.log("Message handled in the background!", remoteMessage);
     });
 
+    // Listen to foreground notification
     const foreground = messaging().onMessage(async remoteMessage => {
       console.log("A new FCM message arrived!", remoteMessage);
       Alert.alert(remoteMessage.notification?.title as string,remoteMessage.notification?.body)
